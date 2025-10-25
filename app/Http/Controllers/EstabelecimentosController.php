@@ -111,4 +111,37 @@ class EstabelecimentosController extends Controller
             $rowMapper
         );
     }    
+
+    public function showByCnpj(string $cnpjBasico): JsonResponse
+    {
+        $cnpjBasico = preg_replace('/\D/', '', $cnpjBasico);
+
+        if (strlen($cnpjBasico) !== 8) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'O CNPJ basico deve conter exatamente 8 digitos numericos.'
+            ], 422);
+        }
+
+        $estabelecimentos = Estabelecimento::query()
+            ->where('cnpj_basico', $cnpjBasico)
+            ->with(['empresa', 'socio'])
+            ->get();
+
+        if ($estabelecimentos->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Nenhum estabelecimento encontrado para o CNPJ informado.'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'count' => $estabelecimentos->count(),
+            'data' => $estabelecimentos,
+            'message' => 'Estabelecimentos recuperados por CNPJ basico.'
+        ]);
+    }
 }
+
+

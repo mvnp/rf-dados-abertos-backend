@@ -63,3 +63,6 @@ Route::get('globocom', [PortalGloboController::class, 'index']);
 
 // Rota para gerar e fazer download do arquivo
 Route::get('/estabelecimentos/export', [EstabelecimentosController::class, 'export'])->name('estabelecimentos.export');
+Route::get('/estabelecimentos/cnpj/{cnpjBasico}', [EstabelecimentosController::class, 'showByCnpj'])
+    ->whereNumber('cnpjBasico')
+    ->name('estabelecimentos.by-cnpj');
